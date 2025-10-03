@@ -26,7 +26,7 @@ import { ErrorHandlerService } from '../../../core/services/error-handler.servic
 export class HeaderComponent {
   // Dependency injection usando inject()
   private authService = inject(AuthService);
-  private router = inject(Router);
+  readonly router = inject(Router);
   private errorHandler = inject(ErrorHandlerService);
 
   // Computed signal para usuario actual

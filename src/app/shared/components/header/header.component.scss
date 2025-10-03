@@ -128,3 +128,13 @@ $shadow: rgba(0, 0, 0, 0.1);
     }
   }
 }
+
+
+.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}

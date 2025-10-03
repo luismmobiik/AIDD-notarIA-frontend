@@ -2,7 +2,7 @@
 <header class="header-nav">
   <div class="header-container">
     <!-- Logo -->
-    <div class="logo">
+    <div class="logo clickable" (click)="router.navigate(['/'])">
       <i class="pi pi-shield"></i>
       <span class="logo-text">NotarIA Digital</span>
     </div>
@@ -29,6 +29,7 @@
         shape="circle"
         size="large"
         styleClass="user-avatar"
+
         (click)="logout()"
       ></p-avatar>
     </div>
