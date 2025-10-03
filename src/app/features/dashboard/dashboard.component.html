@@ -62,7 +62,7 @@
           <!-- Lista de documentos -->
           <div class="documents-list">
             @for (doc of recentDocuments(); track doc.id) {
-              <p-card styleClass="document-item" (click)="navigateTo('/documents/' + doc.id)">
+              <p-card styleClass="document-item md:col-2 lg:col-3 sm:col-12" (click)="navigateTo('/documents/' + doc.id)" >
                 <div class="document-info">
                   <div class="document-icon">
                     <i class="pi pi-file"></i>

@@ -10,6 +10,6 @@ import { RouterOutlet } from '@angular/router';
 export class App {
   protected readonly title = signal('frontend');
 
-  // Auth status check now handled automatically by AuthService constructor
-  // via checkAuthStatus() method which calls /auth/me endpoint
+  // Auth status check handled by APP_INITIALIZER in app.config.ts
+  // This ensures authentication state is determined before routing starts
 }

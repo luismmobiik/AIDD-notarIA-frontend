@@ -1,5 +1,5 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { Observable, tap, catchError, of } from 'rxjs';
+import { Observable, tap, catchError, of, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { ApiService } from './api.service';
 import { ErrorHandlerService } from './error-handler.service';
@@ -35,28 +35,27 @@ export class AuthService {
   private router = inject(Router);
   private errorHandler = inject(ErrorHandlerService);
 
-  constructor() {
-    // Check authentication status on app initialization
-    this.checkAuthStatus();
-  }
-
   /**
    * Check authentication status by calling /me endpoint
    * Cookie sent automatically with request (withCredentials: true)
+   * Returns a Promise that resolves when auth status is determined
    */
-  checkAuthStatus(): void {
-    this.apiService.get<User>('/auth/me').subscribe({
-      next: (user) => {
-        // Valid cookie and user found
-        this.isAuthenticated.set(true);
-        this.currentUser.set(user);
-      },
-      error: () => {
-        // No cookie, invalid cookie, or token expired
-        this.isAuthenticated.set(false);
-        this.currentUser.set(null);
-      }
-    });
+  checkAuthStatus(): Promise<void> {
+    return firstValueFrom(
+      this.apiService.get<User>('/auth/me').pipe(
+        tap(user => {
+          // Valid cookie and user found
+          this.isAuthenticated.set(true);
+          this.currentUser.set(user);
+        }),
+        catchError(() => {
+          // No cookie, invalid cookie, or token expired
+          this.isAuthenticated.set(false);
+          this.currentUser.set(null);
+          return of(null);
+        })
+      )
+    ).then(() => void 0);
   }
 
   /**
