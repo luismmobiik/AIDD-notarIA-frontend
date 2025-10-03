@@ -13,7 +13,7 @@ RUN npm install
 COPY . .
 
 # Compilar la aplicación Angular en modo producción
-RUN npm run build --configuration production
+RUN npm run build --configuration=production
 
 # Production stage - Use nginx to serve static files
 FROM nginx:alpine AS production
