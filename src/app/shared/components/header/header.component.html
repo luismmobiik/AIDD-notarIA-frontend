@@ -1,0 +1,36 @@
+<!-- Header con navegación horizontal -->
+<header class="header-nav">
+  <div class="header-container">
+    <!-- Logo -->
+    <div class="logo">
+      <i class="pi pi-shield"></i>
+      <span class="logo-text">NotarIA Digital</span>
+    </div>
+
+    <!-- Navegación horizontal -->
+    <nav class="nav-menu">
+      @for (item of navItems; track item.route) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class="nav-item"
+        >
+          <i [class]="'pi ' + item.icon"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <!-- Avatar de usuario -->
+    <div class="user-section">
+      <p-avatar
+        [label]="userInitials()"
+        shape="circle"
+        size="large"
+        styleClass="user-avatar"
+        (click)="logout()"
+      ></p-avatar>
+    </div>
+  </div>
+</header>

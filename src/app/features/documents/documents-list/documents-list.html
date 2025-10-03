@@ -1,0 +1,293 @@
+<!-- Header compartido -->
+<app-header></app-header>
+
+<!-- Toast notifications -->
+<p-toast></p-toast>
+
+<!-- Confirm Dialog -->
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Contenido principal -->
+<main class="documents-list-content">
+  <div class="content-container">
+    <!-- Sección de encabezado de página -->
+    <section class="page-header">
+      <div class="header-text">
+        <h1 class="page-title">Mis Documentos</h1>
+        <p class="page-subtitle">Gestiona todos tus documentos notariales</p>
+      </div>
+      <p-button
+        label="Crear Documento"
+        icon="pi pi-plus"
+        (onClick)="createDocument()"
+        styleClass="create-button">
+      </p-button>
+    </section>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <!-- Search Input -->
+    <div class="search-field">
+      <p-iconfield iconPosition="left" styleClass="w-full">
+        <p-inputicon styleClass="pi pi-search" />
+        <input
+          pInputText
+          type="text"
+          placeholder="Buscar por nombre..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange()"
+          class="w-full" />
+      </p-iconfield>
+    </div>
+
+    <!-- Type Filter -->
+    <div class="filter-field">
+      <p-select
+        [(ngModel)]="selectedType"
+        [options]="documentTypeOptions()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Tipo de documento"
+        (onChange)="onFilterChange()"
+        styleClass="w-full">
+      </p-select>
+    </div>
+
+    <!-- Status Filter -->
+    <div class="filter-field">
+      <p-select
+        [(ngModel)]="selectedStatus"
+        [options]="statusOptions()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Estado"
+        (onChange)="onFilterChange()"
+        styleClass="w-full">
+      </p-select>
+    </div>
+
+    <!-- Clear Filters Button -->
+    <p-button
+      label="Limpiar filtros"
+      icon="pi pi-filter-slash"
+      [outlined]="true"
+      (onClick)="clearFilters()">
+    </p-button>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading() && documents().length === 0) {
+    <div class="loading-state">
+      <p-progressSpinner></p-progressSpinner>
+      <p class="loading-text">Cargando documentos...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (errorMessage() && !isLoading()) {
+    <div class="error-state">
+      <p-message
+        severity="error"
+        [text]="errorMessage() || ''"
+        styleClass="w-full">
+      </p-message>
+      <p-button
+        label="Reintentar"
+        icon="pi pi-refresh"
+        (onClick)="retryLoad()"
+        styleClass="mt-3">
+      </p-button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (isEmpty() && !errorMessage()) {
+    <div class="empty-state">
+      <i class="pi pi-file" style="font-size: 4rem; color: var(--text-color-secondary);"></i>
+      <h2>No tienes documentos</h2>
+      <p>Comienza creando tu primer documento</p>
+      <p-button
+        label="Crear Documento"
+        icon="pi pi-plus"
+        (onClick)="createDocument()"
+        styleClass="mt-3">
+      </p-button>
+    </div>
+  }
+
+  <!-- Documents Table (Desktop) -->
+  @if (hasDocuments() && !errorMessage()) {
+    <div class="documents-table-desktop">
+      <p-table
+        [value]="documents()"
+        [loading]="isLoading()"
+        [lazy]="true"
+        [paginator]="false"
+        [rows]="rows()"
+        [totalRecords]="totalRecords()"
+        [rowHover]="true">
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Fecha de creación</th>
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-document>
+          <tr class="document-row" (click)="viewDocument(document)" style="cursor: pointer;">
+            <td>
+              <span class="document-name">{{ document.name }}</span>
+            </td>
+            <td>
+              <span class="document-type">{{ getDocumentTypeLabel(document.type) }}</span>
+            </td>
+            <td>
+              <p-tag
+                [value]="getStatusLabel(document.status)"
+                [severity]="getStatusSeverity(document.status)">
+              </p-tag>
+            </td>
+            <td>
+              <span class="document-date">{{ document.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+            </td>
+            <td class="actions-column" (click)="$event.stopPropagation()">
+              <div class="action-buttons">
+                <!-- Ver Button -->
+                <p-button
+                  icon="pi pi-eye"
+                  [text]="true"
+                  [rounded]="true"
+                  severity="info"
+                  (onClick)="viewDocument(document)"
+                  pTooltip="Ver documento"
+                  tooltipPosition="top">
+                </p-button>
+
+                <!-- Editar Button (only for drafts) -->
+                <p-button
+                  icon="pi pi-pencil"
+                  [text]="true"
+                  [rounded]="true"
+                  severity="secondary"
+                  [disabled]="!canEdit(document)"
+                  (onClick)="editDocument(document)"
+                  [pTooltip]="canEdit(document) ? 'Editar documento' : 'Solo se pueden editar borradores'"
+                  tooltipPosition="top">
+                </p-button>
+
+                <!-- Descargar Button -->
+                <p-button
+                  icon="pi pi-download"
+                  [text]="true"
+                  [rounded]="true"
+                  severity="secondary"
+                  [disabled]="isDownloading()"
+                  [loading]="isDownloading()"
+                  (onClick)="downloadDocument(document)"
+                  pTooltip="Descargar PDF"
+                  tooltipPosition="top">
+                </p-button>
+
+                <!-- Eliminar Button -->
+                <p-button
+                  icon="pi pi-trash"
+                  [text]="true"
+                  [rounded]="true"
+                  severity="danger"
+                  (onClick)="deleteDocument(document)"
+                  pTooltip="Eliminar documento"
+                  tooltipPosition="top">
+                </p-button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="text-center p-4">
+              No se encontraron documentos
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Documents Cards (Mobile) -->
+    <div class="documents-cards-mobile">
+      <p-dataView
+        [value]="documents()"
+        [loading]="isLoading()">
+
+        <ng-template let-items #list>
+          @for (document of items; track document.id) {
+            <div class="document-card" (click)="viewDocument(document)">
+              <div class="card-header">
+                <h3 class="card-title">{{ document.name }}</h3>
+                <p-tag
+                  [value]="getStatusLabel(document.status)"
+                  [severity]="getStatusSeverity(document.status)">
+                </p-tag>
+              </div>
+
+              <div class="card-body">
+                <div class="card-field">
+                  <span class="field-label">Tipo:</span>
+                  <span class="field-value">{{ getDocumentTypeLabel(document.type) }}</span>
+                </div>
+                <div class="card-field">
+                  <span class="field-label">Fecha:</span>
+                  <span class="field-value">{{ document.created_at | date:'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+
+              <div class="card-actions" (click)="$event.stopPropagation()">
+                <p-button
+                  icon="pi pi-eye"
+                  [text]="true"
+                  severity="info"
+                  (onClick)="viewDocument(document)"
+                  label="Ver">
+                </p-button>
+
+                @if (canEdit(document)) {
+                  <p-button
+                    icon="pi pi-pencil"
+                    [text]="true"
+                    severity="secondary"
+                    (onClick)="editDocument(document)"
+                    label="Editar">
+                  </p-button>
+                }
+
+                <p-button
+                  icon="pi pi-trash"
+                  [text]="true"
+                  severity="danger"
+                  (onClick)="deleteDocument(document)"
+                  label="Eliminar">
+                </p-button>
+              </div>
+            </div>
+          }
+        </ng-template>
+      </p-dataView>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-section">
+      <p-paginator
+        [first]="first()"
+        [rows]="rows()"
+        [totalRecords]="totalRecords()"
+        [rowsPerPageOptions]="rowsPerPageOptions()"
+        (onPageChange)="onPageChange($event)">
+      </p-paginator>
+    </div>
+  }
+  </div>
+</main>

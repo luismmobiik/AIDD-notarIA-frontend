@@ -1,0 +1,126 @@
+<!-- Header compartido -->
+<app-header></app-header>
+
+<!-- Contenido principal -->
+<main class="dashboard-content">
+  <div class="content-container">
+    <!-- Sección de bienvenida -->
+    <section class="welcome-section">
+      @if (isLoading()) {
+        <p-skeleton width="300px" height="40px" styleClass="mb-2"></p-skeleton>
+        <p-skeleton width="200px" height="24px"></p-skeleton>
+      } @else {
+        <h1 class="welcome-title">Bienvenido, {{ userName() }}</h1>
+        <p class="welcome-subtitle">¿Qué te gustaría hacer hoy?</p>
+      }
+    </section>
+
+    <!-- Tarjetas de acceso rápido -->
+    <section class="quick-access-section">
+      <div class="cards-grid">
+        @for (card of quickAccessCards; track card.route) {
+          <p-card styleClass="quick-access-card" (click)="navigateTo(card.route)">
+            <ng-template pTemplate="header">
+              <div class="card-icon" [class]="'icon-' + card.color">
+                <i [class]="'pi ' + card.icon"></i>
+              </div>
+            </ng-template>
+            <h3 class="card-title">{{ card.title }}</h3>
+            <p class="card-description">{{ card.description }}</p>
+          </p-card>
+        }
+      </div>
+    </section>
+
+    <!-- Sección de documentos recientes -->
+    <section class="recent-documents-section">
+      <div class="section-header">
+        <h2 class="section-title">Documentos Recientes</h2>
+        <a class="view-all-link" (click)="navigateTo('/documents')">Ver todos</a>
+      </div>
+
+      <div class="documents-container">
+        @if (isLoading()) {
+          <!-- Loading state -->
+          <div class="loading-state">
+            <p-skeleton width="100%" height="100px" styleClass="mb-3"></p-skeleton>
+            <p-skeleton width="100%" height="100px" styleClass="mb-3"></p-skeleton>
+            <p-skeleton width="100%" height="100px"></p-skeleton>
+          </div>
+        } @else if (recentDocuments().length === 0) {
+          <!-- Empty state -->
+          <div class="empty-state">
+            <i class="pi pi-file empty-icon"></i>
+            <p class="empty-message">Aún no tienes documentos</p>
+            <p-button
+              label="Crear tu primer documento"
+              severity="primary"
+              (click)="navigateTo('/documents/create')"
+            ></p-button>
+          </div>
+        } @else {
+          <!-- Lista de documentos -->
+          <div class="documents-list">
+            @for (doc of recentDocuments(); track doc.id) {
+              <p-card styleClass="document-item" (click)="navigateTo('/documents/' + doc.id)">
+                <div class="document-info">
+                  <div class="document-icon">
+                    <i class="pi pi-file"></i>
+                  </div>
+                  <div class="document-details">
+                    <h4 class="document-name">{{ doc.name }}</h4>
+                    <p class="document-meta">
+                      <span class="document-type">{{ doc.type }}</span>
+                      <span class="document-date">{{ formatDate(doc.updated_at) }}</span>
+                    </p>
+                  </div>
+                </div>
+                <div class="document-status">
+                  <p-tag
+                    [value]="getStatusLabel(doc.status)"
+                    [severity]="getStatusSeverity(doc.status)">
+                  </p-tag>
+                </div>
+              </p-card>
+            }
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Tarjetas de estadísticas -->
+    <section class="statistics-section">
+      <div class="stats-grid">
+        <!-- Total de documentos -->
+        <p-card styleClass="stat-card">
+          @if (isLoading()) {
+            <p-skeleton width="100%" height="80px"></p-skeleton>
+          } @else {
+            <p class="stat-label">Total de Documentos</p>
+            <p class="stat-value">{{ stats().total_documents }}</p>
+          }
+        </p-card>
+
+        <!-- Documentos completados -->
+        <p-card styleClass="stat-card">
+          @if (isLoading()) {
+            <p-skeleton width="100%" height="80px"></p-skeleton>
+          } @else {
+            <p class="stat-label">Documentos Completados</p>
+            <p class="stat-value">{{ stats().completed_documents }}</p>
+          }
+        </p-card>
+
+        <!-- En proceso -->
+        <p-card styleClass="stat-card">
+          @if (isLoading()) {
+            <p-skeleton width="100%" height="80px"></p-skeleton>
+          } @else {
+            <p class="stat-label">En Proceso</p>
+            <p class="stat-value">{{ stats().in_progress_documents }}</p>
+          }
+        </p-card>
+      </div>
+    </section>
+  </div>
+</main>

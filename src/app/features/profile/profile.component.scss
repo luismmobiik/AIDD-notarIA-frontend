@@ -1,0 +1,320 @@
+/**
+ * Estilos del Profile Component
+ * Diseño responsive con navegación horizontal y dos columnas para desktop
+ * 100% PrimeNG compliance
+ */
+
+@use "sass:color";
+
+// Variables de colores (matching dashboard)
+$primary: #1e40af;
+$primary-dark: #1e3a8a;
+$secondary: #f3f4f6;
+$accent: #10b981;
+$text-dark: #1f2937;
+$text-gray: #6b7280;
+$text-light: #9ca3af;
+$white: #ffffff;
+$border: #e5e7eb;
+$border-color: #e5e7eb;
+$shadow: rgba(0, 0, 0, 0.1);
+$error-color: #ef4444;
+
+// ============================================
+// CONTENIDO PRINCIPAL
+// ============================================
+
+.profile-content {
+  background: $secondary;
+  min-height: calc(100vh - 64px);
+  padding: 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+.content-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+// ============================================
+// PAGE HEADER
+// ============================================
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: $text-dark;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: 640px) {
+    font-size: 1.5rem;
+  }
+}
+
+.page-subtitle {
+  font-size: 1.125rem;
+  color: $text-gray;
+}
+
+// ============================================
+// PROFILE GRID (TWO COLUMNS ON DESKTOP)
+// ============================================
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+
+  @media (max-width: 640px) {
+    gap: 1rem;
+  }
+}
+
+// ============================================
+// CARD STYLES
+// ============================================
+
+::ng-deep .profile-card.p-card,
+::ng-deep .password-card.p-card {
+  border: 1px solid $border;
+  box-shadow: 0 1px 3px $shadow;
+  transition: all 0.3s ease;
+
+  .p-card-header {
+    background: $white;
+    border-bottom: 1px solid $border;
+    padding: 1.5rem;
+  }
+
+  .p-card-body {
+    padding: 2rem;
+
+    @media (max-width: 640px) {
+      padding: 1.25rem;
+    }
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  i {
+    font-size: 1.5rem;
+    color: $primary;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $text-dark;
+    margin: 0;
+  }
+}
+
+.header-actions {
+  @media (max-width: 640px) {
+    width: 100%;
+
+    ::ng-deep .p-button {
+      width: 100%;
+    }
+  }
+}
+
+// ============================================
+// FORM STYLES
+// ============================================
+
+.profile-form,
+.password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  ::ng-deep .p-float-label {
+    width: 100%;
+
+    label {
+      color: $text-gray;
+      font-size: 0.9375rem;
+    }
+
+    input,
+    .p-password {
+      width: 100%;
+    }
+
+    input.p-inputtext {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid $border;
+      border-radius: 0.5rem;
+      font-size: 0.9375rem;
+      transition: all 0.2s ease;
+
+      &:focus {
+        border-color: $primary;
+        box-shadow: 0 0 0 0.2rem rgba(30, 64, 175, 0.25);
+      }
+
+      &:disabled {
+        background-color: $secondary;
+        cursor: not-allowed;
+        color: $text-gray;
+      }
+
+      &.ng-invalid.ng-dirty {
+        border-color: $error-color;
+
+        &:focus {
+          box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25);
+        }
+      }
+    }
+  }
+
+  // PrimeNG Password field styling
+  ::ng-deep .p-password {
+    width: 100%;
+
+    input.p-inputtext {
+      width: 100%;
+    }
+
+    .p-password-toggle-icon {
+      color: $text-gray;
+    }
+  }
+}
+
+.error-message {
+  color: $error-color;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 0.5rem;
+
+  @media (max-width: 640px) {
+    ::ng-deep .p-button {
+      width: 100%;
+    }
+  }
+}
+
+// ============================================
+// LOADING STATE
+// ============================================
+
+.loading-state {
+  padding: 1rem 0;
+}
+
+// ============================================
+// PRIMENG BUTTON OVERRIDES
+// ============================================
+
+::ng-deep .p-button {
+  background: $primary;
+  border-color: $primary;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $primary-dark;
+    border-color: $primary-dark;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba(30, 64, 175, 0.25);
+  }
+
+  &.p-button-secondary {
+    background: $secondary;
+    border-color: $border;
+    color: $text-dark;
+
+    &:hover {
+      background: color.adjust($secondary, $lightness: -5%);
+      border-color: color.adjust($border, $lightness: -10%);
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba(243, 244, 246, 0.5);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// ============================================
+// PRIMENG TOAST OVERRIDES
+// ============================================
+
+::ng-deep .p-toast {
+  .p-toast-message {
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px $shadow;
+
+    &.p-toast-message-success {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      color: #166534;
+
+      .p-toast-icon {
+        color: #16a34a;
+      }
+    }
+
+    &.p-toast-message-error {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+
+      .p-toast-icon {
+        color: #dc2626;
+      }
+    }
+  }
+}

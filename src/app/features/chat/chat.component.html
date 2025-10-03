@@ -1,0 +1,134 @@
+<!-- Header de navegación -->
+<app-header></app-header>
+
+<!-- Contenedor principal con fondo gris claro -->
+<div class="chat-page">
+  <div class="chat-container">
+    <!-- Título y subtítulo -->
+    <div class="chat-header">
+      <h1 class="chat-title">Asesoría Legal AI</h1>
+      <p class="chat-subtitle">Consulta con NotarIA, tu asistente legal inteligente</p>
+    </div>
+
+    <!-- Mensaje de advertencia si Chrome AI no está disponible -->
+    @if (!chromeAiAvailable()) {
+      <p-message
+        severity="error"
+        [text]="errorMessage()"
+        styleClass="mb-4 w-full"
+      ></p-message>
+    }
+
+    <!-- Área de mensajes -->
+    <div class="messages-card">
+      <!-- Loading inicial -->
+      @if (isLoadingHistory()) {
+        <div class="loading-container">
+          <p-progressSpinner
+            styleClass="w-16 h-16"
+            strokeWidth="4"
+          ></p-progressSpinner>
+          <p class="loading-text">Cargando historial...</p>
+        </div>
+      }
+
+      <!-- Estado vacío - Bienvenida -->
+      @else if (!hasMessages()) {
+        <div class="welcome-state">
+          <div class="welcome-icon">
+            <i class="pi pi-comment text-6xl"></i>
+          </div>
+          <h2 class="welcome-title">¡Hola! Soy NotarIA</h2>
+          <p class="welcome-description">
+            Tu asistente legal especializado en servicios notariales.
+            <br>
+            Pregúntame sobre contratos, escrituras, testamentos y más.
+          </p>
+        </div>
+      }
+
+      <!-- Lista de mensajes -->
+      @else {
+        <div #messagesContainer class="messages-container">
+          @for (message of messages(); track message.id) {
+            <div class="message-wrapper" [class.message-user]="message.role === 'user'" [class.message-assistant]="message.role === 'assistant'">
+              <div class="message-bubble" [class.bubble-user]="message.role === 'user'" [class.bubble-assistant]="message.role === 'assistant'">
+                @if (message.role === 'assistant') {
+                  <div class="message-content" [innerHTML]="message.content | markdown | async"></div>
+                } @else {
+                  <p class="message-content">{{ message.content }}</p>
+                }
+                <span class="message-timestamp">{{ formatDate(message.created_at) }}</span>
+              </div>
+            </div>
+          }
+
+          <!-- Indicador de escritura mientras se envía -->
+          @if (isSending()) {
+            <div class="message-wrapper message-assistant">
+              <div class="message-bubble bubble-assistant">
+                <div class="typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Mensaje de error repetido abajo si no hay Chrome AI -->
+      @if (!chromeAiAvailable() && hasMessages()) {
+        <p-message
+          severity="error"
+          styleClass="mt-4 w-full"
+        >
+          La API de Chrome AI no está disponible en este navegador. Por favor, usa Chrome Canary con las flags habilitadas.
+        </p-message>
+      }
+    </div>
+
+    <!-- Área de input -->
+    <div class="input-area">
+      <div class="input-wrapper">
+        <!-- Botón de limpiar chat a la izquierda (solo si hay mensajes) -->
+        @if (hasMessages()) {
+          <p-button
+            icon="pi pi-trash"
+            severity="secondary"
+            (onClick)="clearChat()"
+            [outlined]="true"
+            styleClass="clear-button"
+            pTooltip="Limpiar chat"
+            tooltipPosition="top"
+          ></p-button>
+        }
+
+        <input
+          type="text"
+          pInputText
+          [ngModel]="userInput()"
+          (ngModelChange)="userInput.set($event)"
+          (keydown)="onEnterPress($event)"
+          [disabled]="isSending() || !chromeAiAvailable()"
+          placeholder="Pregúntame sobre trámites notariales..."
+          class="chat-input"
+        />
+        <p-button
+          icon="pi pi-send"
+          (onClick)="sendMessage()"
+          [disabled]="!canSendMessage()"
+          [loading]="isSending()"
+          styleClass="send-button"
+        ></p-button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast para notificaciones -->
+<p-toast></p-toast>
+
+<!-- Dialog de confirmación -->
+<p-confirmDialog></p-confirmDialog>

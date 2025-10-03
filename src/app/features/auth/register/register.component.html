@@ -1,0 +1,151 @@
+<!-- Toast para notificaciones -->
+<p-toast></p-toast>
+
+<!-- Contenedor principal centrado -->
+<div class="register-container">
+  <div class="register-content">
+    <!-- Logo y título -->
+    <div class="header-section">
+      <p-avatar
+        icon="pi pi-shield"
+        size="xlarge"
+        [style]="{'background-color': '#1e40af', 'color': 'white'}">
+      </p-avatar>
+      <h1 class="app-title">NotarIA Digital</h1>
+    </div>
+
+    <!-- Tarjeta de registro -->
+    <div class="card-wrapper">
+      <p-card styleClass="register-card">
+        <div class="card-header">
+          <h2 class="form-title">Crear Cuenta</h2>
+          <p class="form-subtitle">Regístrate para comenzar a usar nuestros servicios</p>
+        </div>
+
+        <!-- Mensaje de error general -->
+        @if (errorMessage()) {
+          <p-message
+            severity="error"
+            [text]="errorMessage()"
+            styleClass="w-full mb-4"
+          ></p-message>
+        }
+
+        <!-- Formulario reactivo -->
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+
+          <!-- Nombre Completo -->
+          <div class="form-field">
+            <label for="name" class="field-label">Nombre Completo</label>
+            <input
+              pInputText
+              id="name"
+              formControlName="name"
+              type="text"
+              class="w-full"
+              placeholder="Juan Pérez"
+              [ngClass]="{'ng-invalid ng-dirty': hasError('name')}"
+            />
+            @if (hasError('name')) {
+              <small class="error-message">
+                {{ getErrorMessage('name') }}
+              </small>
+            }
+          </div>
+
+          <!-- Email -->
+          <div class="form-field">
+            <label for="email" class="field-label">Email</label>
+            <input
+              pInputText
+              id="email"
+              formControlName="email"
+              type="email"
+              class="w-full"
+              placeholder="tu@email.com"
+              [ngClass]="{'ng-invalid ng-dirty': hasError('email')}"
+            />
+            @if (hasError('email')) {
+              <small class="error-message">
+                {{ getErrorMessage('email') }}
+              </small>
+            }
+          </div>
+
+          <!-- Teléfono -->
+          <div class="form-field">
+            <label for="phone" class="field-label">Teléfono</label>
+            <input
+              pInputText
+              id="phone"
+              formControlName="phone"
+              type="tel"
+              class="w-full"
+              placeholder="+52 55 1234 5678"
+              [ngClass]="{'ng-invalid ng-dirty': hasError('phone')}"
+            />
+            @if (hasError('phone')) {
+              <small class="error-message">
+                {{ getErrorMessage('phone') }}
+              </small>
+            }
+          </div>
+
+          <!-- Contraseña -->
+          <div class="form-field">
+            <label for="password" class="field-label">Contraseña</label>
+            <p-password
+              id="password"
+              formControlName="password"
+              [toggleMask]="true"
+              [feedback]="false"
+              placeholder="••••••••"
+              styleClass="w-full"
+              inputStyleClass="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': hasError('password')}"
+            ></p-password>
+            @if (hasError('password')) {
+              <small class="error-message">
+                {{ getErrorMessage('password') }}
+              </small>
+            }
+          </div>
+
+          <!-- Confirmar Contraseña -->
+          <div class="form-field">
+            <label for="confirmPassword" class="field-label">Confirmar Contraseña</label>
+            <p-password
+              id="confirmPassword"
+              formControlName="confirmPassword"
+              [toggleMask]="true"
+              [feedback]="false"
+              placeholder="••••••••"
+              styleClass="w-full"
+              inputStyleClass="w-full"
+              [ngClass]="{'ng-invalid ng-dirty': hasError('confirmPassword')}"
+            ></p-password>
+            @if (hasError('confirmPassword')) {
+              <small class="error-message">
+                {{ getErrorMessage('confirmPassword') }}
+              </small>
+            }
+          </div>
+
+          <!-- Botón de registro -->
+          <p-button
+            type="submit"
+            label="Crear Cuenta"
+            [loading]="isSubmitting()"
+            [disabled]="isSubmitting()"
+            styleClass="w-full submit-button"
+          ></p-button>
+        </form>
+
+        <!-- Link a login -->
+        <div class="footer-link">
+          <p>¿Ya tienes cuenta? <a routerLink="/auth/login" class="login-link">Inicia sesión</a></p>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>

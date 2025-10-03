@@ -1,0 +1,406 @@
+/**
+ * ViewDocument Component Styles
+ * Diseño consistente con Dashboard y Profile
+ * Mobile-first responsive design
+ * Utiliza Tailwind CSS utilities + PrimeNG theming
+ */
+
+// Variables de colores (matching dashboard y profile)
+$primary: #1e40af;
+$primary-dark: #1e3a8a;
+$secondary: #f3f4f6;
+$accent: #10b981;
+$text-dark: #1f2937;
+$text-gray: #6b7280;
+$text-light: #9ca3af;
+$white: #ffffff;
+$border: #e5e7eb;
+$border-color: #e5e7eb;
+$shadow: rgba(0, 0, 0, 0.1);
+
+// ============================================
+// CONTENIDO PRINCIPAL
+// ============================================
+
+.view-document-content {
+  background: $secondary;
+  min-height: calc(100vh - 64px);
+  padding: 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/**
+ * Loading State
+ */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+
+  .loading-text {
+    color: var(--text-color-secondary);
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+
+/**
+ * Error State
+ */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem 1rem;
+
+  .error-actions {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+/**
+ * Document Header
+ */
+.document-header {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  .header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  .document-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+
+    @media (min-width: 768px) {
+      font-size: 1.75rem;
+    }
+
+    @media (min-width: 1024px) {
+      font-size: 2rem;
+    }
+  }
+
+  .status-badge {
+    align-self: flex-start;
+
+    @media (min-width: 768px) {
+      align-self: center;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+
+    // Mobile: botones full width
+    ::ng-deep p-button {
+      flex: 1 1 100%;
+      min-width: 0;
+
+      @media (min-width: 640px) {
+        flex: 0 1 auto;
+      }
+    }
+
+    @media (min-width: 640px) {
+      flex-wrap: nowrap;
+    }
+  }
+}
+
+/**
+ * Document Card
+ */
+.document-card {
+  ::ng-deep .p-card-body {
+    padding: 0;
+  }
+
+  ::ng-deep .p-card-content {
+    padding: 0;
+  }
+}
+
+/**
+ * Informaci�n B�sica - Grid
+ */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    &.full-width {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .info-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    margin: 0;
+  }
+
+  .info-value {
+    font-size: 1rem;
+    color: var(--text-color);
+    margin: 0;
+
+    &.notarized {
+      display: flex;
+      align-items: center;
+      color: var(--green-600);
+      font-weight: 500;
+    }
+  }
+}
+
+/**
+ * Partes Involucradas
+ */
+.parties-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .party-card {
+    background: var(--surface-ground);
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    padding: 1rem;
+
+    .party-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--surface-border);
+
+      .party-icon {
+        color: var(--primary-color);
+        font-size: 1.25rem;
+      }
+
+      .party-name {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin: 0;
+      }
+    }
+
+    .party-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .party-detail {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        @media (min-width: 640px) {
+          flex-direction: row;
+          gap: 0.5rem;
+        }
+
+        label {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: var(--text-color-secondary);
+          min-width: 120px;
+        }
+
+        span {
+          font-size: 0.875rem;
+          color: var(--text-color);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * T�rminos y Condiciones
+ */
+.terms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .term-item {
+    background: var(--surface-ground);
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    padding: 1rem;
+
+    .term-key {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      margin-bottom: 0.5rem;
+    }
+
+    .term-value {
+      font-size: 1rem;
+      color: var(--text-color);
+      margin: 0;
+      word-wrap: break-word;
+    }
+  }
+}
+
+/**
+ * Contenido Adicional
+ */
+.content-section {
+  background: var(--surface-ground);
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow: auto;
+
+  .content-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.875rem;
+    color: var(--text-color);
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/**
+ * Empty Message
+ */
+.empty-message {
+  text-align: center;
+  color: var(--text-color-secondary);
+  font-style: italic;
+  padding: 2rem;
+  margin: 0;
+}
+
+/**
+ * Footer Actions
+ */
+.footer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--surface-border);
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/**
+ * Spacing para p-panel
+ */
+::ng-deep {
+  .p-panel.mt-3 {
+    margin-top: 1rem;
+  }
+
+  .p-panel {
+    .p-panel-header {
+      background: var(--surface-section);
+      border-color: var(--surface-border);
+      color: var(--text-color);
+      font-weight: 600;
+    }
+
+    .p-panel-content {
+      border-color: var(--surface-border);
+      background: var(--surface-card);
+    }
+  }
+}
+
+/**
+ * Responsive adjustments para PrimeNG components
+ */
+::ng-deep {
+  // Buttons responsive
+  p-button {
+    .p-button {
+      width: 100%;
+
+      @media (min-width: 640px) {
+        width: auto;
+      }
+    }
+  }
+
+  // Toast responsive
+  .p-toast {
+    @media (max-width: 640px) {
+      width: 90%;
+      left: 5%;
+      right: 5%;
+    }
+  }
+
+  // Confirm dialog responsive
+  .p-confirmdialog {
+    @media (max-width: 640px) {
+      width: 90vw !important;
+      max-width: 90vw !important;
+    }
+  }
+}

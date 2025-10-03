@@ -1,0 +1,69 @@
+/**
+ * Estilos del Documents Component
+ * Diseño consistente con Dashboard y Profile
+ * 100% PrimeNG compliance
+ */
+
+// Variables de colores (matching dashboard y profile)
+$primary: #1e40af;
+$primary-dark: #1e3a8a;
+$secondary: #f3f4f6;
+$accent: #10b981;
+$text-dark: #1f2937;
+$text-gray: #6b7280;
+$text-light: #9ca3af;
+$white: #ffffff;
+$border: #e5e7eb;
+$border-color: #e5e7eb;
+$shadow: rgba(0, 0, 0, 0.1);
+
+// ============================================
+// CONTENIDO PRINCIPAL
+// ============================================
+
+.documents-content {
+  background: $secondary;
+  min-height: calc(100vh - 64px);
+  padding: 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+.content-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+// ============================================
+// PAGE HEADER
+// ============================================
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: $text-dark;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: 640px) {
+    font-size: 1.5rem;
+  }
+}
+
+.page-subtitle {
+  font-size: 1.125rem;
+  color: $text-gray;
+}
+
+// ============================================
+// DOCUMENTS SECTION
+// ============================================
+
+.documents-section {
+  margin-bottom: 2rem;
+}

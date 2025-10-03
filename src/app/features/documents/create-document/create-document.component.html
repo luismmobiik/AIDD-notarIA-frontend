@@ -1,0 +1,394 @@
+<!-- Header compartido -->
+<app-header></app-header>
+
+<!-- Contenido principal -->
+<main class="create-document-content">
+  <div class="content-container">
+    <!-- Toast para notificaciones -->
+    <p-toast></p-toast>
+
+    <!-- Card principal -->
+    <p-card>
+    <ng-template pTemplate="header">
+      <div class="card-header">
+        <h2>{{ pageTitle() }}</h2>
+        <p class="subtitle">{{ pageSubtitle() }}</p>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="content">
+      <!-- Mensaje de error global -->
+      @if (errorMessage()) {
+        <p-message severity="error" [text]="errorMessage()" styleClass="mb-4"></p-message>
+      }
+
+      <!-- Stepper de PrimeNG v20 - Estructura correcta -->
+      <p-stepper [(value)]="activeStepIndex">
+        <!-- Lista de pasos (headers) -->
+        <p-step-list>
+          <p-step [value]="0">Tipo de Documento</p-step>
+          <p-step [value]="1">Partes Involucradas</p-step>
+          <p-step [value]="2">Términos</p-step>
+          <p-step [value]="3">Confirmación</p-step>
+        </p-step-list>
+
+        <!-- Paneles de contenido -->
+        <p-step-panels>
+          <!-- Paso 1: Tipo de Documento -->
+          <p-step-panel [value]="0">
+            <ng-template pTemplate="content" let-activateCallback="activateCallback" let-value="value" let-active="active">
+            <form [formGroup]="step1Form" class="step-form">
+              <div class="form-section">
+                <h3>Seleccione el tipo de documento</h3>
+
+                <!-- Select de tipo de documento (deshabilitado en modo edición) -->
+                <div class="field">
+                  <label for="documentType" class="required">Tipo de Documento</label>
+                  <p-select
+                    id="documentType"
+                    formControlName="documentType"
+                    [options]="documentTypes"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Seleccione un tipo"
+                    styleClass="w-full"
+                    [showClear]="false"
+                    [disabled]="isEditMode()">
+                  </p-select>
+                  @if (hasError(step1Form, 'documentType')) {
+                    <small class="error-message">Debe seleccionar un tipo de documento</small>
+                  }
+                  @if (isEditMode()) {
+                    <small class="info-message">No se puede cambiar el tipo de documento al editar</small>
+                  }
+                </div>
+
+                <!-- Input de nombre del documento -->
+                <div class="field">
+                  <label for="documentName" class="required">Nombre del Documento</label>
+                  <input
+                    pInputText
+                    id="documentName"
+                    formControlName="documentName"
+                    placeholder="Ej: Contrato de Arrendamiento Casa Ejemplo"
+                    class="w-full" />
+                  @if (hasError(step1Form, 'documentName', 'required')) {
+                    <small class="error-message">El nombre del documento es requerido</small>
+                  }
+                  @if (hasError(step1Form, 'documentName', 'minlength')) {
+                    <small class="error-message">El nombre debe tener al menos 3 caracteres</small>
+                  }
+                  @if (hasError(step1Form, 'documentName', 'maxlength')) {
+                    <small class="error-message">El nombre no puede exceder 200 caracteres</small>
+                  }
+                </div>
+              </div>
+
+              <div class="step-actions">
+                <p-button
+                  label="Siguiente"
+                  icon="pi pi-arrow-right"
+                  iconPos="right"
+                  (onClick)="nextStep()"
+                  [disabled]="!canProceedFromStep1()">
+                </p-button>
+              </div>
+            </form>
+          </ng-template>
+        </p-step-panel>
+
+          <!-- Paso 2: Partes Involucradas -->
+          <p-step-panel [value]="1">
+            <ng-template pTemplate="content" let-activateCallback="activateCallback" let-value="value" let-active="active">
+            <form [formGroup]="step2Form" class="step-form">
+              <div class="form-section">
+                <div class="section-header">
+                  <h3>Partes involucradas en el documento</h3>
+                  <p-button
+                    label="Agregar Parte"
+                    icon="pi pi-plus"
+                    severity="secondary"
+                    size="small"
+                    (onClick)="addParty()">
+                  </p-button>
+                </div>
+
+                <!-- Lista de partes -->
+                <div formArrayName="parties" class="parties-list">
+                  @for (party of partiesArray.controls; track $index) {
+                    <p-card class="party-card">
+                      <ng-template pTemplate="header">
+                        <div class="party-card-header">
+                          <span>Parte {{ $index + 1 }}</span>
+                          @if (partiesArray.length > 1) {
+                            <p-button
+                              icon="pi pi-trash"
+                              severity="danger"
+                              [text]="true"
+                              [rounded]="true"
+                              size="small"
+                              (onClick)="removeParty($index)">
+                            </p-button>
+                          }
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="content">
+                        <div [formGroupName]="$index" class="party-fields">
+                          <!-- Nombre -->
+                          <div class="field">
+                            <label [for]="'partyName' + $index" class="required">Nombre Completo</label>
+                            <input
+                              pInputText
+                              [id]="'partyName' + $index"
+                              formControlName="name"
+                              placeholder="Nombre completo"
+                              class="w-full" />
+                            @if (hasPartyError($index, 'name')) {
+                              <small class="error-message">El nombre es requerido (mínimo 2 caracteres)</small>
+                            }
+                          </div>
+
+                          <!-- Identificación -->
+                          <div class="field">
+                            <label [for]="'partyId' + $index" class="required">Identificación</label>
+                            <input
+                              pInputText
+                              [id]="'partyId' + $index"
+                              formControlName="id"
+                              placeholder="RFC, CURP, o INE"
+                              class="w-full" />
+                            @if (hasPartyError($index, 'id')) {
+                              <small class="error-message">La identificación es requerida</small>
+                            }
+                          </div>
+
+                          <!-- Dirección -->
+                          <div class="field">
+                            <label [for]="'partyAddress' + $index" class="required">Dirección</label>
+                            <textarea
+                              pInputTextarea
+                              [id]="'partyAddress' + $index"
+                              formControlName="address"
+                              placeholder="Dirección completa"
+                              rows="3"
+                              class="w-full">
+                            </textarea>
+                            @if (hasPartyError($index, 'address')) {
+                              <small class="error-message">La dirección es requerida</small>
+                            }
+                          </div>
+                        </div>
+                      </ng-template>
+                    </p-card>
+                  }
+                </div>
+              </div>
+
+              <div class="step-actions">
+                <p-button
+                  label="Anterior"
+                  icon="pi pi-arrow-left"
+                  severity="secondary"
+                  [outlined]="true"
+                  (onClick)="previousStep()">
+                </p-button>
+                <p-button
+                  label="Siguiente"
+                  icon="pi pi-arrow-right"
+                  iconPos="right"
+                  (onClick)="nextStep()"
+                  [disabled]="!canProceedFromStep2()">
+                </p-button>
+              </div>
+            </form>
+          </ng-template>
+        </p-step-panel>
+
+          <!-- Paso 3: Términos y Condiciones -->
+          <p-step-panel [value]="2">
+            <ng-template pTemplate="content" let-activateCallback="activateCallback" let-value="value" let-active="active">
+            <form [formGroup]="step3Form" class="step-form">
+              <div class="form-section">
+                <div class="section-header">
+                  <h3>Términos y condiciones específicas</h3>
+                  <p-button
+                    label="Agregar Término"
+                    icon="pi pi-plus"
+                    severity="secondary"
+                    size="small"
+                    (onClick)="addTerm()">
+                  </p-button>
+                </div>
+
+                <!-- Lista de términos -->
+                <div formArrayName="terms" class="terms-list">
+                  @for (term of termsArray.controls; track $index) {
+                    <div [formGroupName]="$index" class="term-row">
+                      <div class="term-fields">
+                        <div class="field flex-1">
+                          <input
+                            pInputText
+                            formControlName="key"
+                            placeholder="Nombre del término (ej: Monto, Plazo)"
+                            class="w-full" />
+                          @if (hasTermError($index, 'key')) {
+                            <small class="error-message">Requerido</small>
+                          }
+                        </div>
+
+                        <div class="field flex-2">
+                          <input
+                            pInputText
+                            formControlName="value"
+                            placeholder="Valor del término"
+                            class="w-full" />
+                          @if (hasTermError($index, 'value')) {
+                            <small class="error-message">Requerido</small>
+                          }
+                        </div>
+
+                        <p-button
+                          icon="pi pi-trash"
+                          severity="danger"
+                          [text]="true"
+                          [rounded]="true"
+                          size="small"
+                          (onClick)="removeTerm($index)">
+                        </p-button>
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <!-- Contenido adicional -->
+                <div class="field mt-4">
+                  <label for="additionalContent">Contenido Adicional (Opcional)</label>
+                  <textarea
+                    pInputTextarea
+                    id="additionalContent"
+                    formControlName="additionalContent"
+                    placeholder="Agregue cualquier información adicional aquí..."
+                    rows="5"
+                    class="w-full">
+                  </textarea>
+                </div>
+              </div>
+
+              <div class="step-actions">
+                <p-button
+                  label="Anterior"
+                  icon="pi pi-arrow-left"
+                  severity="secondary"
+                  [outlined]="true"
+                  (onClick)="previousStep()">
+                </p-button>
+                <p-button
+                  label="Siguiente"
+                  icon="pi pi-arrow-right"
+                  iconPos="right"
+                  (onClick)="nextStep()">
+                </p-button>
+              </div>
+            </form>
+          </ng-template>
+        </p-step-panel>
+
+          <!-- Paso 4: Preview y Confirmación -->
+          <p-step-panel [value]="3">
+            <ng-template pTemplate="content" let-activateCallback="activateCallback" let-value="value" let-active="active">
+            <div class="step-form">
+              <div class="form-section">
+                <h3>Revise la información del documento</h3>
+
+                <!-- Preview del documento -->
+                <div class="preview-container">
+                  <!-- Información básica -->
+                  <p-panel header="Información Básica" styleClass="mb-3">
+                    <div class="preview-field">
+                      <span class="preview-label">Tipo:</span>
+                      <span class="preview-value">{{ getDocumentTypeLabel() }}</span>
+                    </div>
+                    <div class="preview-field">
+                      <span class="preview-label">Nombre:</span>
+                      <span class="preview-value">{{ step1Form.get('documentName')?.value }}</span>
+                    </div>
+                  </p-panel>
+
+                  <!-- Partes involucradas -->
+                  <p-panel header="Partes Involucradas" styleClass="mb-3">
+                    @for (party of partiesArray.controls; track $index) {
+                      <div class="preview-party">
+                        <h4>Parte {{ $index + 1 }}</h4>
+                        <div class="preview-field">
+                          <span class="preview-label">Nombre:</span>
+                          <span class="preview-value">{{ party.value.name }}</span>
+                        </div>
+                        <div class="preview-field">
+                          <span class="preview-label">Identificación:</span>
+                          <span class="preview-value">{{ party.value.id }}</span>
+                        </div>
+                        <div class="preview-field">
+                          <span class="preview-label">Dirección:</span>
+                          <span class="preview-value">{{ party.value.address }}</span>
+                        </div>
+                      </div>
+                    }
+                  </p-panel>
+
+                  <!-- Términos -->
+                  @if (termsArray.length > 0) {
+                    <p-panel header="Términos y Condiciones" styleClass="mb-3">
+                      @for (term of termsArray.controls; track $index) {
+                        <div class="preview-field">
+                          <span class="preview-label">{{ term.value.key }}:</span>
+                          <span class="preview-value">{{ term.value.value }}</span>
+                        </div>
+                      }
+                    </p-panel>
+                  }
+
+                  <!-- Contenido adicional -->
+                  @if (step3Form.get('additionalContent')?.value) {
+                    <p-panel header="Contenido Adicional" styleClass="mb-3">
+                      <p class="preview-value">{{ step3Form.get('additionalContent')?.value }}</p>
+                    </p-panel>
+                  }
+                </div>
+              </div>
+
+              <!-- Acciones finales -->
+              <div class="step-actions">
+                <p-button
+                  label="Anterior"
+                  icon="pi pi-arrow-left"
+                  severity="secondary"
+                  [outlined]="true"
+                  (onClick)="previousStep()">
+                </p-button>
+                <p-button
+                  label="Cancelar"
+                  icon="pi pi-times"
+                  severity="secondary"
+                  [outlined]="true"
+                  (onClick)="cancel()"
+                  [disabled]="isLoading()">
+                </p-button>
+                <p-button
+                  [label]="submitButtonLabel()"
+                  icon="pi pi-save"
+                  severity="primary"
+                  (onClick)="saveDocument()"
+                  [loading]="isLoading()"
+                  [disabled]="!canSubmit()">
+                </p-button>
+              </div>
+            </div>
+          </ng-template>
+          </p-step-panel>
+        </p-step-panels>
+      </p-stepper>
+    </ng-template>
+  </p-card>
+  </div>
+</main>

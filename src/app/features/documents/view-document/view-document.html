@@ -1,0 +1,244 @@
+<!-- Header compartido -->
+<app-header></app-header>
+
+<!-- Toast para notificaciones globales -->
+<p-toast></p-toast>
+
+<!-- Dialog de confirmación -->
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Contenido principal -->
+<main class="view-document-content">
+  <div class="content-container">
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <p-progressSpinner
+        styleClass="w-4rem h-4rem"
+        strokeWidth="4"
+        fill="var(--surface-ground)"
+        animationDuration=".5s">
+      </p-progressSpinner>
+      <p class="loading-text">Cargando documento...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (errorMessage() && !isLoading()) {
+    <div class="error-container">
+      <p-message
+        severity="error"
+        [text]="errorMessage()!"
+        styleClass="w-full">
+      </p-message>
+
+      <div class="error-actions">
+        <p-button
+          label="Volver a la lista"
+          icon="pi pi-arrow-left"
+          severity="secondary"
+          (onClick)="goBack()">
+        </p-button>
+      </div>
+    </div>
+  }
+
+  <!-- Contenido del documento -->
+  @if (document() && !isLoading() && !errorMessage()) {
+    <!-- Header con título y estado -->
+    <div class="document-header">
+      <div class="header-content">
+        <h1 class="document-title">{{ documentName() }}</h1>
+        <p-tag
+          [value]="getStatusLabel(documentStatus())"
+          [severity]="getStatusSeverity(documentStatus())"
+          styleClass="status-badge">
+        </p-tag>
+      </div>
+
+      <!-- Botones de acción principales -->
+      <div class="header-actions">
+        <p-button
+          label="Volver"
+          icon="pi pi-arrow-left"
+          severity="secondary"
+          [outlined]="true"
+          (onClick)="goBack()">
+        </p-button>
+
+        @if (canEdit()) {
+          <p-button
+            label="Editar"
+            icon="pi pi-pencil"
+            severity="primary"
+            (onClick)="editDocument()">
+          </p-button>
+        }
+
+        <p-button
+          label="Descargar PDF"
+          icon="pi pi-download"
+          severity="secondary"
+          [disabled]="isDownloading()"
+          [loading]="isDownloading()"
+          (onClick)="downloadDocument()"
+          pTooltip="Descargar documento como PDF"
+          tooltipPosition="bottom">
+        </p-button>
+
+        @if (canComplete()) {
+          <p-button
+            label="Marcar como completado"
+            icon="pi pi-check"
+            severity="info"
+            [disabled]="isCompleting()"
+            [loading]="isCompleting()"
+            (onClick)="completeDocument()"
+            pTooltip="Finalizar edición y habilitar notarización"
+            tooltipPosition="bottom">
+          </p-button>
+        }
+
+        @if (canNotarize()) {
+          <p-button
+            label="Solicitar Notarización"
+            icon="pi pi-check-circle"
+            severity="success"
+            [disabled]="isNotarizing()"
+            [loading]="isNotarizing()"
+            (onClick)="notarizeDocument()"
+            pTooltip="Cambiar estado a notarizado (demo)"
+            tooltipPosition="bottom">
+          </p-button>
+        }
+
+        <p-button
+          label="Eliminar"
+          icon="pi pi-trash"
+          severity="danger"
+          [outlined]="true"
+          (onClick)="deleteDocument()">
+        </p-button>
+      </div>
+    </div>
+
+    <!-- Card principal con información del documento -->
+    <p-card styleClass="document-card">
+      <!-- Sección: Información Básica -->
+      <p-panel header="Información Básica" [toggleable]="true" [collapsed]="false">
+        <div class="info-grid">
+          <div class="info-item">
+            <label class="info-label">Tipo de Documento</label>
+            <p class="info-value">{{ documentType() }}</p>
+          </div>
+
+          <div class="info-item">
+            <label class="info-label">Estado</label>
+            <p class="info-value">
+              <p-tag
+                [value]="getStatusLabel(documentStatus())"
+                [severity]="getStatusSeverity(documentStatus())">
+              </p-tag>
+            </p>
+          </div>
+
+          <div class="info-item">
+            <label class="info-label">Fecha de Creación</label>
+            <p class="info-value">{{ createdAt() | date:'dd/MM/yyyy HH:mm':'':'es' }}</p>
+          </div>
+
+          <div class="info-item">
+            <label class="info-label">Última Actualización</label>
+            <p class="info-value">{{ updatedAt() | date:'dd/MM/yyyy HH:mm':'':'es' }}</p>
+          </div>
+
+          @if (isNotarized() && notarizedAt()) {
+            <div class="info-item full-width">
+              <label class="info-label">Fecha de Notarización</label>
+              <p class="info-value notarized">
+                <i class="pi pi-check-circle" style="color: var(--green-500); margin-right: 0.5rem;"></i>
+                {{ notarizedAt() | date:'dd/MM/yyyy HH:mm':'':'es' }}
+              </p>
+            </div>
+          }
+        </div>
+      </p-panel>
+
+      <!-- Sección: Partes Involucradas -->
+      @if (partiesArray().length > 0) {
+        <p-panel header="Partes Involucradas" [toggleable]="true" [collapsed]="false" styleClass="mt-3">
+          <div class="parties-list">
+            @for (party of partiesArray(); track $index) {
+              <div class="party-card">
+                <div class="party-header">
+                  <i class="pi pi-user party-icon"></i>
+                  <h4 class="party-name">{{ party.name }}</h4>
+                </div>
+                <div class="party-details">
+                  <div class="party-detail">
+                    <label>Identificación:</label>
+                    <span>{{ party.id }}</span>
+                  </div>
+                  <div class="party-detail">
+                    <label>Dirección:</label>
+                    <span>{{ party.address }}</span>
+                  </div>
+                </div>
+              </div>
+            } @empty {
+              <p class="empty-message">No hay partes involucradas registradas</p>
+            }
+          </div>
+        </p-panel>
+      }
+
+      <!-- Sección: Términos y Condiciones -->
+      @if (termsArray().length > 0) {
+        <p-panel header="Términos y Condiciones" [toggleable]="true" [collapsed]="false" styleClass="mt-3">
+          <div class="terms-list">
+            @for (term of termsArray(); track $index) {
+              <div class="term-item">
+                <label class="term-key">{{ term.key }}</label>
+                <p class="term-value">{{ term.value }}</p>
+              </div>
+            } @empty {
+              <p class="empty-message">No hay términos registrados</p>
+            }
+          </div>
+        </p-panel>
+      }
+
+      <!-- Sección: Contenido Adicional -->
+      @if (document()?.content) {
+        <p-panel header="Contenido Adicional" [toggleable]="true" [collapsed]="true" styleClass="mt-3">
+          <div class="content-section">
+            <pre class="content-text">{{ document()!.content | json }}</pre>
+          </div>
+        </p-panel>
+      }
+    </p-card>
+
+    <!-- Botones de acción inferiores (responsive) -->
+    <div class="footer-actions">
+      <p-button
+        label="Volver a la lista"
+        icon="pi pi-arrow-left"
+        severity="secondary"
+        [outlined]="true"
+        styleClass="w-full sm:w-auto"
+        (onClick)="goBack()">
+      </p-button>
+
+      @if (canEdit()) {
+        <p-button
+          label="Editar Documento"
+          icon="pi pi-pencil"
+          severity="primary"
+          styleClass="w-full sm:w-auto"
+          (onClick)="editDocument()">
+        </p-button>
+      }
+    </div>
+  }
+  </div>
+</main>

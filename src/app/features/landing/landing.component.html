@@ -1,0 +1,153 @@
+<!-- Header/Navigation -->
+<header class="header">
+  <div class="header-container">
+    <!-- Logo -->
+    <div class="logo">
+      <i class="pi pi-shield"></i>
+      <span class="logo-text">{{ title }}</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav" role="navigation" aria-label="Navegación principal">
+      <p-button
+        label="Servicios"
+        [text]="true"
+        (onClick)="scrollToSection('servicios')"
+        styleClass="nav-link"
+        aria-label="Ir a sección de servicios">
+      </p-button>
+      <p-button
+        label="Beneficios"
+        [text]="true"
+        (onClick)="scrollToSection('beneficios')"
+        styleClass="nav-link"
+        aria-label="Ir a sección de beneficios">
+      </p-button>
+      <p-button
+        label="Iniciar Sesión"
+        [text]="true"
+        (onClick)="navigateToLogin()"
+        styleClass="nav-link"
+        aria-label="Iniciar sesión">
+      </p-button>
+      <p-button
+        label="Comenzar Ahora"
+        (onClick)="navigateToRegister()"
+        styleClass="cta-button"
+        aria-label="Comenzar registro"></p-button>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero" role="banner">
+  <div class="hero-container">
+    <h1 class="hero-title">{{ title }}</h1>
+    <p class="hero-subtitle">{{ subtitle }}</p>
+    <p class="hero-description">{{ description }}</p>
+
+    <div class="hero-actions">
+      <p-button
+        label="Comenzar Ahora"
+        (onClick)="navigateToRegister()"
+        styleClass="btn-primary"
+        size="large"
+        aria-label="Comenzar registro"></p-button>
+      <p-button
+        label="Iniciar Sesión"
+        (onClick)="navigateToLogin()"
+        styleClass="btn-secondary"
+        size="large"
+        [outlined]="true"
+        aria-label="Iniciar sesión"></p-button>
+    </div>
+  </div>
+</section>
+
+<!-- Services Section -->
+<section id="servicios" class="services-section" aria-labelledby="services-heading">
+  <div class="section-container">
+    <h2 id="services-heading" class="section-title">Nuestros Servicios</h2>
+    <p class="section-subtitle">
+      Ofrecemos una amplia gama de servicios notariales digitales para satisfacer todas tus necesidades legales
+    </p>
+
+    <div class="services-grid">
+      @for (service of services(); track service.title) {
+        <p-card styleClass="service-card">
+          <ng-template pTemplate="header">
+            <div class="service-icon-container">
+              <i [class]="service.icon + ' service-icon'"></i>
+            </div>
+          </ng-template>
+          <h3 class="service-title">{{ service.title }}</h3>
+          <p class="service-description">{{ service.description }}</p>
+        </p-card>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Benefits Section -->
+<section id="beneficios" class="benefits-section" aria-labelledby="benefits-heading">
+  <div class="section-container">
+    <h2 id="benefits-heading" class="section-title">¿Por qué elegir NotarIA Digital?</h2>
+
+    <div class="benefits-grid">
+      @for (benefit of benefits(); track benefit.title) {
+        <p-card styleClass="benefit-card">
+          <ng-template pTemplate="header">
+            <div class="benefit-icon-container" [style.background-color]="benefit.iconBgColor">
+              <i [class]="benefit.icon + ' benefit-icon'"></i>
+            </div>
+          </ng-template>
+          <h3 class="benefit-title">{{ benefit.title }}</h3>
+          <p class="benefit-description">{{ benefit.description }}</p>
+        </p-card>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer" role="contentinfo">
+  <div class="footer-container">
+    <!-- Brand Column -->
+    <div class="footer-column">
+      <div class="footer-logo">
+        <i class="pi pi-shield"></i>
+        <span class="footer-logo-text">{{ title }}</span>
+      </div>
+      <p class="footer-tagline">Servicios notariales modernos para el México digital</p>
+    </div>
+
+    <!-- Contact Column -->
+    <div class="footer-column">
+      <h3 class="footer-heading">Contacto</h3>
+      <p class="footer-text">
+        <i class="pi pi-envelope"></i>
+        <a href="mailto:contacto@notariadigital.mx" class="footer-link">contacto&#64;notariadigital.mx</a>
+      </p>
+      <p class="footer-text">
+        <i class="pi pi-phone"></i>
+        <a href="tel:+525512345678" class="footer-link">+52 55 1234 5678</a>
+      </p>
+    </div>
+
+    <!-- Legal Column -->
+    <div class="footer-column">
+      <h3 class="footer-heading">Legal</h3>
+      <p class="footer-text">
+        <a href="#" class="footer-link">Términos y Condiciones</a>
+      </p>
+      <p class="footer-text">
+        <a href="#" class="footer-link">Política de Privacidad</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Copyright -->
+  <div class="footer-bottom">
+    <p class="copyright">&copy; 2025 NotarIA Digital. Todos los derechos reservados.</p>
+  </div>
+</footer>

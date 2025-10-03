@@ -1,0 +1,838 @@
+{
+  "projectName": "NotarIA Digital MVP",
+  "framework": "Angular",
+  "frameworkVersion": "20.3.0",
+  "projectType": "frontend-only",
+  "uiFramework": "PrimeNG",
+  "uiFrameworkVersion": "20.2.0",
+  "stylingApproach": "TailwindCSS + PrimeNG Theme + SCSS",
+  "officialDocs": "https://angular.dev/overview",
+  "primeNGDocs": "https://primeng.org/",
+  "createdAt": "2025-10-02T00:00:00.000Z",
+
+  "structure": {
+    "src/app/core": {
+      "responsibility": "Core application services, guards, interceptors, and models",
+      "pattern": "Singleton services, shared utilities, application-wide infrastructure",
+      "contains": "guards/, interceptors/, models/, services/",
+      "doesNotContain": "UI components, feature-specific logic, business rules"
+    },
+    "src/app/features": {
+      "responsibility": "Feature modules organized by business domain",
+      "pattern": "Feature-based architecture with standalone components",
+      "contains": "auth/, chat/, dashboard/, documents/, landing/, services-catalog/",
+      "doesNotContain": "Shared utilities, core services, reusable UI components"
+    },
+    "src/app/shared": {
+      "responsibility": "Reusable UI components and utilities used across features",
+      "pattern": "Shared standalone components built with PrimeNG",
+      "contains": "Reusable UI components, pipes, directives",
+      "doesNotContain": "Feature-specific logic, core services, business logic"
+    },
+    "src/environments": {
+      "responsibility": "Environment-specific configuration",
+      "pattern": "Separate files for development, staging, production",
+      "contains": "environment.ts, environment.prod.ts",
+      "doesNotContain": "Business logic, components, services"
+    }
+  },
+
+  "componentArchitecture": {
+    "type": "Standalone Components",
+    "pattern": "Angular 20+ standalone components with explicit imports",
+    "primeNGEnforcement": {
+      "mandate": "MANDATORY: All UI components MUST use PrimeNG components when available",
+      "severity": "CRITICAL",
+      "hierarchy": [
+        "1. PrimeNG components (PRIMARY - always check first)",
+        "2. Angular CDK (only if PrimeNG doesn't provide functionality)",
+        "3. Custom components (ONLY with documented justification)"
+      ],
+      "preImplementationChecklist": [
+        "[ ] Check PrimeNG Showcase (https://primeng.org/showcase) for available component",
+        "[ ] Review PrimeNG documentation for component API and examples",
+        "[ ] Verify if PrimeNG component supports required functionality",
+        "[ ] Import required PrimeNG module in component imports array",
+        "[ ] Use PrimeNG component with proper configuration",
+        "[ ] Apply PrimeNG theme CSS variables for custom styling if needed"
+      ],
+      "requiredImports": {
+        "description": "PrimeNG modules must be imported in standalone component imports array",
+        "example": [
+          "import { ButtonModule } from 'primeng/button';",
+          "import { CardModule } from 'primeng/card';",
+          "import { InputTextModule } from 'primeng/inputtext';",
+          "",
+          "@Component({",
+          "  selector: 'app-example',",
+          "  standalone: true,",
+          "  imports: [CommonModule, ButtonModule, CardModule, InputTextModule],",
+          "  templateUrl: './example.component.html'",
+          "})"
+        ]
+      },
+      "commonComponentMappings": {
+        "description": "Mandatory PrimeNG components for common UI patterns",
+        "mappings": {
+          "card": {
+            "use": "p-card",
+            "instead_of": "<div class=\"card\">, custom card divs",
+            "module": "CardModule",
+            "import": "primeng/card",
+            "reason": "Consistent card styling, built-in header/footer/content sections"
+          },
+          "button": {
+            "use": "p-button",
+            "instead_of": "<button>, <a> styled as button",
+            "module": "ButtonModule",
+            "import": "primeng/button",
+            "reason": "Consistent button styling, severity variants, icon support, loading states"
+          },
+          "table": {
+            "use": "p-table",
+            "instead_of": "<table>, custom table implementations",
+            "module": "TableModule",
+            "import": "primeng/table",
+            "reason": "Pagination, sorting, filtering, selection built-in"
+          },
+          "dialog": {
+            "use": "p-dialog",
+            "instead_of": "custom modal, overlay implementations",
+            "module": "DialogModule",
+            "import": "primeng/dialog",
+            "reason": "Accessibility, keyboard navigation, backdrop, animations"
+          },
+          "select": {
+            "use": "p-select",
+            "instead_of": "<select>, custom select",
+            "module": "SelectModule",
+            "import": "primeng/select",
+            "reason": "Virtual scrolling, filtering, grouping, custom templates"
+          },
+          "input": {
+            "use": "p-inputText or p-floatLabel",
+            "instead_of": "<input>, custom input wrappers",
+            "module": "InputTextModule, FloatLabelModule",
+            "import": "primeng/inputtext, primeng/floatlabel",
+            "reason": "Consistent styling, form integration, validation states"
+          },
+          "toast": {
+            "use": "p-toast with MessageService",
+            "instead_of": "custom notification systems, alert boxes",
+            "module": "ToastModule",
+            "import": "primeng/toast",
+            "reason": "Auto-dismiss, positioning, severity variants, stacking"
+          },
+          "menu": {
+            "use": "p-menu, p-menubar, p-tieredMenu",
+            "instead_of": "custom navigation, select menus",
+            "module": "MenuModule, MenubarModule, TieredMenuModule",
+            "import": "primeng/menu, primeng/menubar, primeng/tieredmenu",
+            "reason": "Keyboard navigation, nested menus, icons, routing integration"
+          },
+          "tabs": {
+            "use": "p-tabView",
+            "instead_of": "custom tab implementations",
+            "module": "TabViewModule",
+            "import": "primeng/tabview",
+            "reason": "Lazy loading, closable tabs, dynamic tabs, keyboard navigation"
+          },
+          "panel": {
+            "use": "p-panel, p-accordion",
+            "instead_of": "custom collapsible sections",
+            "module": "PanelModule, AccordionModule",
+            "import": "primeng/panel, primeng/accordion",
+            "reason": "Toggle animation, header templates, consistent styling"
+          },
+          "fileUpload": {
+            "use": "p-fileUpload",
+            "instead_of": "<input type=\"file\">, custom upload components",
+            "module": "FileUploadModule",
+            "import": "primeng/fileupload",
+            "reason": "Drag-drop, multiple files, progress tracking, custom upload logic"
+          },
+          "calendar": {
+            "use": "p-calendar",
+            "instead_of": "<input type=\"date\">, custom date pickers",
+            "module": "CalendarModule",
+            "import": "primeng/calendar",
+            "reason": "Date ranges, time selection, localization, formatting"
+          }
+        }
+      },
+      "enforcementRules": [
+        {
+          "rule": "CRITICAL: Check PrimeNG first before writing any UI HTML",
+          "description": "Before implementing any UI element, developer MUST verify if PrimeNG provides a component",
+          "validation": "Code review must verify PrimeNG components are used",
+          "violation_severity": "CRITICAL",
+          "examples": {
+            "violations": [
+              "<div class=\"card\"> → VIOLATION: Should use <p-card>",
+              "<button class=\"btn\"> → VIOLATION: Should use <p-button>",
+              "<table> → VIOLATION: Should use <p-table>",
+              "<select> → VIOLATION: Should use <p-select>",
+              "Custom modal → VIOLATION: Should use <p-dialog>"
+            ],
+            "correct": [
+              "<p-card header=\"Title\"><p-card>",
+              "<p-button label=\"Submit\" icon=\"pi pi-check\"></p-button>",
+              "<p-table [value]=\"data\"></p-table>",
+              "<p-select [options]=\"items\"></p-select>",
+              "<p-dialog [(visible)]=\"display\"></p-dialog>"
+            ]
+          }
+        },
+        {
+          "rule": "Custom HTML only with architectural approval",
+          "description": "Plain HTML elements (div, span, button, etc.) are only allowed when PrimeNG has no equivalent OR for basic layout structure",
+          "allowed_cases": [
+            "Layout containers (div, section, article) for page structure",
+            "Text elements (p, h1-h6, span) for content",
+            "Semantic HTML (header, footer, nav, main, aside)",
+            "When PrimeNG component doesn't exist for required functionality"
+          ],
+          "requires_justification": [
+            "Why PrimeNG component cannot be used",
+            "What functionality is missing from PrimeNG",
+            "Why custom implementation is necessary",
+            "How it maintains design consistency"
+          ]
+        },
+        {
+          "rule": "PrimeNG theme variables for custom styling",
+          "description": "When custom styling is needed, use PrimeNG CSS variables from theme",
+          "example": [
+            "var(--primary-color)",
+            "var(--text-color)",
+            "var(--surface-ground)",
+            "var(--surface-card)",
+            "var(--border-radius)"
+          ],
+          "reason": "Maintains theme consistency, supports dark mode, respects user preferences"
+        },
+        {
+          "rule": "Component configuration over custom CSS",
+          "description": "Use PrimeNG component APIs (severity, style, class) instead of writing custom CSS",
+          "examples": [
+            "Use severity=\"success\" instead of custom green button styling",
+            "Use styleClass for utility classes instead of component-specific CSS",
+            "Use PrimeNG size variants (small, large) instead of custom sizing"
+          ]
+        }
+      ]
+    }
+  },
+
+  "codeGenerationWorkflow": {
+    "description": "Step-by-step workflow for implementing new features",
+    "steps": [
+      {
+        "step": 1,
+        "name": "Understand Requirements",
+        "actions": [
+          "Analyze user story and acceptance criteria",
+          "Identify UI components needed",
+          "Determine data models and services required"
+        ]
+      },
+      {
+        "step": 2,
+        "name": "VERIFY PrimeNG COMPONENT AVAILABILITY",
+        "critical": true,
+        "actions": [
+          "MANDATORY: Open PrimeNG Showcase (https://primeng.org/showcase)",
+          "Search for components matching UI requirements",
+          "Review component documentation and examples",
+          "Identify required PrimeNG modules to import",
+          "Plan component configuration (props, events, templates)",
+          "Document any functionality NOT available in PrimeNG"
+        ],
+        "validation": [
+          "Have you checked PrimeNG Showcase?",
+          "Have you reviewed component API documentation?",
+          "Have you identified all required imports?",
+          "Have you confirmed PrimeNG cannot provide this functionality?"
+        ]
+      },
+      {
+        "step": 3,
+        "name": "Design Component Structure",
+        "actions": [
+          "Create standalone component with explicit imports",
+          "Import required PrimeNG modules",
+          "Define component interface and inputs/outputs",
+          "Plan component hierarchy and composition"
+        ]
+      },
+      {
+        "step": 4,
+        "name": "Implement Template with PrimeNG",
+        "actions": [
+          "Use PrimeNG components from step 2",
+          "Configure components using their APIs",
+          "Apply PrimeNG severity variants and styles",
+          "Use PrimeNG templates for customization",
+          "Add layout structure with semantic HTML"
+        ]
+      },
+      {
+        "step": 5,
+        "name": "Implement Component Logic",
+        "actions": [
+          "Add TypeScript logic for component behavior",
+          "Integrate with services and state management",
+          "Handle PrimeNG component events",
+          "Implement form validation if needed"
+        ]
+      },
+      {
+        "step": 6,
+        "name": "Style with Theme Variables",
+        "actions": [
+          "Use PrimeNG component styleClass for utilities",
+          "Apply PrimeNG theme CSS variables for custom colors",
+          "Use TailwindCSS utilities for spacing and layout",
+          "Avoid component-specific CSS unless necessary"
+        ]
+      },
+      {
+        "step": 7,
+        "name": "Test and Validate",
+        "actions": [
+          "Run application and verify functionality",
+          "Test responsive behavior",
+          "Verify accessibility (keyboard navigation, screen readers)",
+          "Review code against PrimeNG enforcement checklist"
+        ]
+      }
+    ]
+  },
+
+  "qualityStandards": {
+    "uiConsistency": {
+      "principle": "PrimeNG provides UI consistency across the application",
+      "requirements": [
+        "All interactive components use PrimeNG",
+        "Theme integration through @primeuix/themes",
+        "CSS variables from PrimeNG theme for custom styling",
+        "Component styling via PrimeNG APIs (severity, style, styleClass)",
+        "TailwindCSS only for spacing, layout, and utilities",
+        "SCSS only for component-specific overrides when necessary"
+      ],
+      "benefits": [
+        "Consistent design system across all pages",
+        "Built-in accessibility features",
+        "Reduced custom CSS maintenance",
+        "Automatic theme support (light/dark mode)",
+        "Professional appearance out of the box",
+        "Faster development (no custom component creation)"
+      ]
+    },
+    "accessibility": {
+      "principle": "PrimeNG components provide accessibility by default",
+      "requirements": [
+        "Use PrimeNG semantic HTML and ARIA attributes",
+        "Keyboard navigation provided by PrimeNG",
+        "Screen reader support built into components",
+        "Focus management handled by PrimeNG",
+        "Add additional ARIA labels only when customizing templates"
+      ]
+    },
+    "performance": {
+      "principle": "Optimize for performance while using PrimeNG",
+      "requirements": [
+        "Use virtual scrolling in p-table for large datasets",
+        "Lazy load PrimeNG modules in route-level components",
+        "Use p-virtualScroller for long lists",
+        "Implement OnPush change detection where possible",
+        "Avoid unnecessary PrimeNG module imports"
+      ]
+    },
+    "maintainability": {
+      "principle": "PrimeNG reduces maintenance burden",
+      "requirements": [
+        "Let PrimeNG handle component state and behavior",
+        "Use PrimeNG APIs instead of DOM manipulation",
+        "Follow PrimeNG documentation patterns",
+        "Document any PrimeNG customizations",
+        "Keep PrimeNG version updated for bug fixes and features"
+      ]
+    }
+  },
+
+  "componentPatterns": {
+    "description": "Standard PrimeNG patterns to follow in the application",
+    "patterns": {
+      "cardPattern": {
+        "description": "Always use p-card for card layouts",
+        "template": [
+          "<p-card header=\"Card Title\">",
+          "  <ng-template pTemplate=\"header\">",
+          "    <!-- Custom header content -->",
+          "  </ng-template>",
+          "  ",
+          "  <!-- Card content -->",
+          "  ",
+          "  <ng-template pTemplate=\"footer\">",
+          "    <div class=\"flex gap-2 justify-end\">",
+          "      <p-button label=\"Cancel\" severity=\"secondary\"></p-button>",
+          "      <p-button label=\"Save\" severity=\"primary\"></p-button>",
+          "    </div>",
+          "  </ng-template>",
+          "</p-card>"
+        ],
+        "imports": ["CardModule"],
+        "styling": "Use styleClass for TailwindCSS utilities, theme variables for colors"
+      },
+      "buttonPattern": {
+        "description": "Always use p-button with appropriate severity and icons",
+        "template": [
+          "<!-- Primary action -->",
+          "<p-button label=\"Submit\" icon=\"pi pi-check\" severity=\"primary\"></p-button>",
+          "",
+          "<!-- Secondary action -->",
+          "<p-button label=\"Cancel\" severity=\"secondary\" [outlined]=\"true\"></p-button>",
+          "",
+          "<!-- Icon only -->",
+          "<p-button icon=\"pi pi-trash\" severity=\"danger\" [rounded]=\"true\" [text]=\"true\"></p-button>",
+          "",
+          "<!-- Loading state -->",
+          "<p-button label=\"Save\" [loading]=\"isLoading\"></p-button>"
+        ],
+        "imports": ["ButtonModule"],
+        "severityOptions": ["primary", "secondary", "success", "info", "warning", "danger", "help", "contrast"]
+      },
+      "formPattern": {
+        "description": "Always use PrimeNG form components with reactive forms",
+        "template": [
+          "<form [formGroup]=\"form\" (ngSubmit)=\"onSubmit()\">",
+          "  <div class=\"flex flex-col gap-4\">",
+          "    <p-floatLabel>",
+          "      <input pInputText id=\"email\" formControlName=\"email\" />",
+          "      <label for=\"email\">Email</label>",
+          "    </p-floatLabel>",
+          "    ",
+          "    <p-floatLabel>",
+          "      <p-password id=\"password\" formControlName=\"password\" [feedback]=\"false\"></p-password>",
+          "      <label for=\"password\">Password</label>",
+          "    </p-floatLabel>",
+          "    ",
+          "    <p-button type=\"submit\" label=\"Login\" [disabled]=\"form.invalid\"></p-button>",
+          "  </div>",
+          "</form>"
+        ],
+        "imports": ["InputTextModule", "FloatLabelModule", "PasswordModule", "ButtonModule"],
+        "validation": "Use Angular reactive forms validation, PrimeNG shows invalid state automatically"
+      },
+      "tablePattern": {
+        "description": "Always use p-table with pagination and sorting",
+        "template": [
+          "<p-table ",
+          "  [value]=\"data\" ",
+          "  [paginator]=\"true\" ",
+          "  [rows]=\"10\" ",
+          "  [showCurrentPageReport]=\"true\"",
+          "  [tableStyle]=\"{ 'min-width': '50rem' }\"",
+          "  currentPageReportTemplate=\"Showing {first} to {last} of {totalRecords} entries\"",
+          "  [rowsPerPageOptions]=\"[10, 25, 50]\">",
+          "  <ng-template pTemplate=\"header\">",
+          "    <tr>",
+          "      <th pSortableColumn=\"name\">Name <p-sortIcon field=\"name\"></p-sortIcon></th>",
+          "      <th pSortableColumn=\"status\">Status <p-sortIcon field=\"status\"></p-sortIcon></th>",
+          "      <th>Actions</th>",
+          "    </tr>",
+          "  </ng-template>",
+          "  <ng-template pTemplate=\"body\" let-item>",
+          "    <tr>",
+          "      <td>{{ item.name }}</td>",
+          "      <td><p-tag [value]=\"item.status\" [severity]=\"getStatusSeverity(item.status)\"></p-tag></td>",
+          "      <td>",
+          "        <p-button icon=\"pi pi-pencil\" [rounded]=\"true\" [text]=\"true\"></p-button>",
+          "        <p-button icon=\"pi pi-trash\" severity=\"danger\" [rounded]=\"true\" [text]=\"true\"></p-button>",
+          "      </td>",
+          "    </tr>",
+          "  </ng-template>",
+          "</p-table>"
+        ],
+        "imports": ["TableModule", "ButtonModule", "TagModule"],
+        "features": "Built-in pagination, sorting, filtering, selection, virtual scrolling"
+      },
+      "dialogPattern": {
+        "description": "Always use p-dialog for modals and overlays",
+        "template": [
+          "<p-dialog ",
+          "  [(visible)]=\"displayDialog\" ",
+          "  [modal]=\"true\" ",
+          "  [style]=\"{ width: '50vw' }\" ",
+          "  [draggable]=\"false\" ",
+          "  [resizable]=\"false\"",
+          "  header=\"Dialog Title\">",
+          "  <ng-template pTemplate=\"content\">",
+          "    <!-- Dialog content -->",
+          "  </ng-template>",
+          "  <ng-template pTemplate=\"footer\">",
+          "    <p-button label=\"Cancel\" severity=\"secondary\" (onClick)=\"displayDialog = false\"></p-button>",
+          "    <p-button label=\"Confirm\" severity=\"primary\" (onClick)=\"onConfirm()\"></p-button>",
+          "  </ng-template>",
+          "</p-dialog>"
+        ],
+        "imports": ["DialogModule", "ButtonModule"],
+        "features": "Keyboard navigation, backdrop, animations, responsive"
+      },
+      "toastPattern": {
+        "description": "Always use p-toast with MessageService for notifications",
+        "template": [
+          "<!-- In template -->",
+          "<p-toast></p-toast>",
+          "",
+          "// In component",
+          "constructor(private messageService: MessageService) {}",
+          "",
+          "showSuccess() {",
+          "  this.messageService.add({",
+          "    severity: 'success',",
+          "    summary: 'Success',",
+          "    detail: 'Operation completed successfully'",
+          "  });",
+          "}",
+          "",
+          "showError() {",
+          "  this.messageService.add({",
+          "    severity: 'error',",
+          "    summary: 'Error',",
+          "    detail: 'Operation failed'",
+          "  });",
+          "}"
+        ],
+        "imports": ["ToastModule"],
+        "providers": ["MessageService"],
+        "severityOptions": ["success", "info", "warn", "error"]
+      },
+      "menuPattern": {
+        "description": "Always use PrimeNG menu components for navigation",
+        "template": [
+          "<!-- Menubar for main navigation -->",
+          "<p-menubar [model]=\"menuItems\">",
+          "  <ng-template pTemplate=\"start\">",
+          "    <img src=\"logo.png\" height=\"40\" class=\"mr-2\" />",
+          "  </ng-template>",
+          "  <ng-template pTemplate=\"end\">",
+          "    <p-button label=\"Logout\" icon=\"pi pi-sign-out\"></p-button>",
+          "  </ng-template>",
+          "</p-menubar>",
+          "",
+          "// Component",
+          "menuItems: MenuItem[] = [",
+          "  { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/dashboard' },",
+          "  { label: 'Documents', icon: 'pi pi-file', routerLink: '/documents' },",
+          "  { label: 'Services', icon: 'pi pi-briefcase', routerLink: '/services' }",
+          "];"
+        ],
+        "imports": ["MenubarModule", "ButtonModule"],
+        "features": "Routing integration, icons, nested menus, templates"
+      }
+    }
+  },
+
+  "fileStructure": {
+    "imports": {
+      "description": "Required imports in Angular standalone components",
+      "pattern": [
+        "// Angular core",
+        "import { Component, OnInit } from '@angular/core';",
+        "import { CommonModule } from '@angular/common';",
+        "import { ReactiveFormsModule } from '@angular/forms';",
+        "",
+        "// PrimeNG components (import as needed)",
+        "import { ButtonModule } from 'primeng/button';",
+        "import { CardModule } from 'primeng/card';",
+        "import { InputTextModule } from 'primeng/inputtext';",
+        "import { TableModule } from 'primeng/table';",
+        "",
+        "// Component decorator",
+        "@Component({",
+        "  selector: 'app-example',",
+        "  standalone: true,",
+        "  imports: [",
+        "    CommonModule,",
+        "    ReactiveFormsModule,",
+        "    // PrimeNG modules",
+        "    ButtonModule,",
+        "    CardModule,",
+        "    InputTextModule,",
+        "    TableModule",
+        "  ],",
+        "  templateUrl: './example.component.html',",
+        "  styleUrl: './example.component.scss'",
+        "})",
+        "export class ExampleComponent implements OnInit {",
+        "  // Component logic",
+        "}"
+      ]
+    }
+  },
+
+  "solidPrinciples": {
+    "SRP": "Each folder has one clear responsibility: /core for infrastructure, /features for business domains, /shared for reusable UI",
+    "OCP": "Modular architecture with standalone components allows extension without modification. New features added as new feature modules.",
+    "LSP": "Components are composable and replaceable. PrimeNG components can be swapped for custom implementations if needed (though not recommended).",
+    "ISP": "Features are independent modules that don't depend on each other. Shared dependencies are in /core and /shared.",
+    "DIP": "Components depend on abstractions (services, interfaces) not concrete implementations. Services injected via DI."
+  },
+
+  "layerArchitecture": [
+    {
+      "layer": "Core Layer",
+      "path": "src/app/core",
+      "responsibility": "Application infrastructure: services, guards, interceptors, models"
+    },
+    {
+      "layer": "Feature Layer",
+      "path": "src/app/features",
+      "responsibility": "Business features organized by domain with PrimeNG UI components"
+    },
+    {
+      "layer": "Shared Layer",
+      "path": "src/app/shared",
+      "responsibility": "Reusable UI components built with PrimeNG, shared utilities"
+    },
+    {
+      "layer": "Presentation Layer",
+      "path": "Component templates",
+      "responsibility": "PrimeNG components configured for specific use cases"
+    }
+  ],
+
+  "architecturalDecisions": [
+    {
+      "decision": "Angular 20+ Standalone Components",
+      "rationale": [
+        "Modern Angular architecture without NgModules",
+        "Explicit imports improve tree-shaking",
+        "Simpler dependency management",
+        "Better performance with lazy loading"
+      ],
+      "consequences": [
+        "All components must explicitly import dependencies",
+        "No shared NgModule for common imports",
+        "PrimeNG modules imported directly in components"
+      ]
+    },
+    {
+      "decision": "PrimeNG as Primary UI Framework (MANDATORY)",
+      "rationale": [
+        "Comprehensive component library covers all UI needs",
+        "Consistent design system across application",
+        "Built-in accessibility features (WCAG compliance)",
+        "Reduced custom CSS and maintenance burden",
+        "Theme support with @primeuix/themes",
+        "Active maintenance and regular updates",
+        "Professional appearance out of the box",
+        "Faster development without custom component creation",
+        "Excellent documentation and examples"
+      ],
+      "consequences": [
+        "CRITICAL: All new UI must use PrimeNG components first",
+        "Custom components only when PrimeNG doesn't provide functionality",
+        "Developers MUST review PrimeNG Showcase before implementing UI",
+        "PrimeNG modules must be imported in every component using them",
+        "Design decisions must align with PrimeNG component capabilities",
+        "Custom styling limited to PrimeNG theme variables and TailwindCSS utilities"
+      ],
+      "enforcement": "This is a non-negotiable architectural standard, equivalent to TypeScript strict mode requirement"
+    },
+    {
+      "decision": "TailwindCSS for Utility Styling",
+      "rationale": [
+        "Complements PrimeNG for spacing and layout",
+        "Utility-first approach reduces custom CSS",
+        "Responsive design utilities",
+        "PrimeNG integration via tailwindcss-primeui"
+      ],
+      "consequences": [
+        "Use TailwindCSS for spacing, layout, and positioning",
+        "Use PrimeNG components for all UI elements",
+        "Use PrimeNG theme variables for colors and design tokens",
+        "SCSS only for component-specific overrides when necessary"
+      ]
+    },
+    {
+      "decision": "Feature-Based Architecture",
+      "rationale": [
+        "Better code organization by business domain",
+        "Easier to locate and maintain feature code",
+        "Supports team scaling (teams per feature)",
+        "Clear boundaries between features"
+      ],
+      "consequences": [
+        "Each feature is self-contained in /features folder",
+        "Features should not import from other features",
+        "Shared code goes in /shared or /core"
+      ]
+    }
+  ],
+
+  "conventions": {
+    "fileNaming": "kebab-case for files: user-profile.component.ts, auth.service.ts",
+    "folderNaming": "kebab-case for folders: services-catalog/, auth/",
+    "componentNaming": "PascalCase for classes: UserProfileComponent, AuthService",
+    "imports": "Explicit imports in standalone components, group by: Angular core, PrimeNG, local",
+    "exports": "Named exports only, no default exports",
+    "primeNGModules": "Import only required PrimeNG modules in each component to optimize bundle size"
+  },
+
+  "antiPatterns": [
+    {
+      "pattern": "Using plain HTML elements when PrimeNG component exists",
+      "severity": "CRITICAL",
+      "examples": [
+        "<button> instead of <p-button>",
+        "<div class=\"card\"> instead of <p-card>",
+        "<table> instead of <p-table>",
+        "<select> instead of <p-select>",
+        "Custom modal instead of <p-dialog>"
+      ],
+      "solution": "ALWAYS check PrimeNG Showcase first. Use PrimeNG components for all UI elements.",
+      "impact": "Breaks design consistency, loses accessibility features, increases maintenance"
+    },
+    {
+      "pattern": "Creating custom UI components without checking PrimeNG",
+      "severity": "CRITICAL",
+      "examples": [
+        "Custom select component when p-select exists",
+        "Custom date picker when p-calendar exists",
+        "Custom data table when p-table exists"
+      ],
+      "solution": "Review PrimeNG documentation before creating any custom component. 95% of UI needs are covered by PrimeNG.",
+      "impact": "Wasted development time, inconsistent UI, accessibility issues"
+    },
+    {
+      "pattern": "Excessive custom CSS instead of using PrimeNG APIs",
+      "severity": "HIGH",
+      "examples": [
+        "Custom button styling instead of using severity variants",
+        "Custom table styling instead of using p-table styleClass",
+        "Custom colors instead of using PrimeNG theme variables"
+      ],
+      "solution": "Use PrimeNG component configuration (severity, style, styleClass) and theme CSS variables",
+      "impact": "Theme inconsistency, breaks dark mode, difficult to maintain"
+    },
+    {
+      "pattern": "Importing entire PrimeNG in app configuration",
+      "severity": "HIGH",
+      "example": "Importing all PrimeNG modules globally instead of per-component",
+      "solution": "Import only required PrimeNG modules in each standalone component",
+      "impact": "Large bundle size, poor performance, slow loading"
+    },
+    {
+      "pattern": "Feature modules importing from other features",
+      "severity": "MEDIUM",
+      "example": "auth/login importing from dashboard/widgets",
+      "solution": "Move shared code to /shared or /core. Features should be independent.",
+      "impact": "Tight coupling, difficult to refactor, circular dependencies"
+    },
+    {
+      "pattern": "Business logic in components",
+      "severity": "MEDIUM",
+      "example": "HTTP calls, complex calculations directly in component",
+      "solution": "Move logic to services in /core/services. Components should be thin.",
+      "impact": "Difficult to test, code duplication, poor reusability"
+    },
+    {
+      "pattern": "Not using TypeScript strict mode",
+      "severity": "MEDIUM",
+      "example": "any types, optional chaining not used, no null checks",
+      "solution": "Enable strict mode in tsconfig.json, use proper types",
+      "impact": "Runtime errors, poor code quality, difficult to refactor"
+    }
+  ],
+
+  "reviewChecklist": {
+    "primeNGVerification": {
+      "description": "MANDATORY: Verify PrimeNG component usage before code approval",
+      "checks": [
+        "[ ] All cards use <p-card> component",
+        "[ ] All buttons use <p-button> component",
+        "[ ] All forms use PrimeNG form components (p-inputText, p-select, p-calendar, etc.)",
+        "[ ] All tables use <p-table> component",
+        "[ ] All dialogs/modals use <p-dialog> component",
+        "[ ] All notifications use <p-toast> with MessageService",
+        "[ ] All menus use PrimeNG menu components (p-menubar, p-menu, p-tieredMenu)",
+        "[ ] All panels/accordions use <p-panel> or <p-accordion>",
+        "[ ] PrimeNG modules are imported in component imports array",
+        "[ ] No plain <button>, <table>, <select>, or custom UI when PrimeNG equivalent exists",
+        "[ ] Custom HTML is justified and documented if PrimeNG component cannot be used"
+      ]
+    },
+    "themeConsistency": {
+      "checks": [
+        "[ ] PrimeNG theme CSS variables used for custom colors (var(--primary-color), etc.)",
+        "[ ] Component styling uses PrimeNG APIs (severity, styleClass) before custom CSS",
+        "[ ] TailwindCSS utilities used for spacing and layout only",
+        "[ ] No hardcoded colors that break theme switching"
+      ]
+    },
+    "architecture": {
+      "checks": [
+        "[ ] Standalone components with explicit imports",
+        "[ ] Services in /core/services",
+        "[ ] Feature code in appropriate /features subfolder",
+        "[ ] No feature-to-feature imports",
+        "[ ] Models in /core/models"
+      ]
+    },
+    "codeQuality": {
+      "checks": [
+        "[ ] TypeScript strict mode compliance",
+        "[ ] No any types without justification",
+        "[ ] Proper error handling",
+        "[ ] Component follows Single Responsibility Principle",
+        "[ ] Business logic in services, not components"
+      ]
+    }
+  },
+
+  "primeNGResources": {
+    "documentation": "https://primeng.org/",
+    "showcase": "https://primeng.org/showcase",
+    "themes": "https://primeng.org/theming",
+    "templates": "https://primeng.org/templates",
+    "github": "https://github.com/primefaces/primeng",
+    "gettingStarted": "https://primeng.org/installation"
+  },
+
+  "developmentGuidelines": {
+    "beforeWritingCode": [
+      "1. Read user requirements and acceptance criteria",
+      "2. MANDATORY: Open PrimeNG Showcase and search for required components",
+      "3. Review PrimeNG component documentation and API",
+      "4. Plan component structure with PrimeNG components",
+      "5. Identify required PrimeNG module imports",
+      "6. Begin implementation using PrimeNG components"
+    ],
+    "duringImplementation": [
+      "1. Use PrimeNG components for all UI elements",
+      "2. Configure components using their props/events/templates",
+      "3. Use severity variants for buttons, messages, tags",
+      "4. Use TailwindCSS utilities for spacing and layout",
+      "5. Use PrimeNG theme variables for custom colors",
+      "6. Keep component logic thin, delegate to services"
+    ],
+    "beforeSubmittingCode": [
+      "1. Review PrimeNG verification checklist",
+      "2. Verify all PrimeNG modules are imported",
+      "3. Test responsive behavior and accessibility",
+      "4. Verify theme consistency (light/dark mode if applicable)",
+      "5. Remove any unnecessary custom CSS",
+      "6. Document any justified deviations from PrimeNG usage"
+    ]
+  },
+
+  "metadata": {
+    "created": "2025-10-02T00:00:00.000Z",
+    "lastUpdated": "2025-10-02T00:00:00.000Z",
+    "version": "1.0.0",
+    "maintainer": "NotarIA Digital Team"
+  }
+}
