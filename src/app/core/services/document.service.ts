@@ -78,7 +78,7 @@ export class DocumentService {
       }
     }
 
-    return this.apiService.get<DocumentListResponse>(`/documents${queryString}`);
+    return this.apiService.get<DocumentListResponse>(`/documents/${queryString}`);
   }
 
   /**
