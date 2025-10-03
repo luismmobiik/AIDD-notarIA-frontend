@@ -1,4 +1,4 @@
-FROM node:24.8-slim AS build
+FROM node:24.8-slim AS builder
 
 # Definir directorio de trabajo
 WORKDIR /app
