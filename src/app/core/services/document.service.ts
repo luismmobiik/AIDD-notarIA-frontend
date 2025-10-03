@@ -42,7 +42,7 @@ export class DocumentService {
     this.isLoading.set(true);
     this.error.set(null);
 
-    return this.apiService.post<CreateDocumentResponse>('/documents', documentData);
+    return this.apiService.post<CreateDocumentResponse>('/documents/', documentData);
   }
 
   /**
